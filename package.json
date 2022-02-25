@@ -1,0 +1,18 @@
+{
+    "name": "natours-app",
+    "version": "1.0.0",
+    "description": "Learning Basics of node, express and MongoDB",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js",
+        "server": "nodemon app.js"
+    },
+    "author": "Khalil Patiwala",
+    "license": "MIT",
+    "dependencies": {
+        "express": "^4.17.3"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.15"
+    }
+}
