@@ -1,6 +1,5 @@
 const express = require("express");
 const morgan = require("morgan");
-const dotenv = require("dotenv").config();
 const { errorHandler } = require("./middleware/errorMiddleware");
 
 const app = express();
