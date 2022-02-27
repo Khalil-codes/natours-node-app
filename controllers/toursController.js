@@ -7,7 +7,6 @@ const tours = JSON.parse(
 
 // Params middleware
 const checkID = (req, res, next, val) => {
-    console.log(`ID is: ${val}`);
     const tour = tours.find((el) => el.id === +val);
     if (!tour) {
         res.status(400);
