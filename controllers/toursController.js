@@ -5,6 +5,26 @@ const tours = JSON.parse(
     fs.readFileSync(`./dev-data/data/tours-simple.json`, "utf-8")
 );
 
+// Params middleware
+const checkID = (req, res, next, val) => {
+    console.log(`ID is: ${val}`);
+    const tour = tours.find((el) => el.id === +val);
+    if (!tour) {
+        res.status(400);
+        throw new Error("Tour Not Found");
+    }
+    next();
+};
+
+// Request Body Middleware
+const checkBody = (req, res, next) => {
+    if (!req.body.name || !req.body.price) {
+        res.status(400);
+        throw new Error("Name or Price field is missing");
+    }
+    next();
+};
+
 // @desc    Get tours
 // @route   GET /api/v1/tours
 // @access  Public
@@ -21,10 +41,7 @@ const getTours = (req, res) => {
 // @access  Public
 const getTourById = (req, res) => {
     const tour = tours.find((el) => el.id === +req.params.id);
-    if (!tour) {
-        res.status(400);
-        throw new Error("Tour Not Found");
-    }
+
     res.status(200).json({
         status: "success",
         data: { tour },
@@ -34,10 +51,6 @@ const getTourById = (req, res) => {
 // @route   POST /api/v1/tours
 // @access  Private
 const createTour = (req, res) => {
-    if (!req.body) {
-        res.status(400);
-        throw new Error("Please Add Data");
-    }
     const newId = tours.at(-1).id + 1;
     const newTour = { id: newId, ...req.body };
     tours.push(newTour);
@@ -64,10 +77,6 @@ const createTour = (req, res) => {
 // @access  Private
 const updateTour = (req, res) => {
     const tour = tours.find((el) => el.id === +req.params.id);
-    if (!tour) {
-        res.status(400);
-        throw new Error("Tour Not Found");
-    }
 
     res.status(200).json({
         status: "success",
@@ -80,15 +89,18 @@ const updateTour = (req, res) => {
 // @access  Private
 const deleteTour = (req, res) => {
     const tour = tours.find((el) => el.id === +req.params.id);
-    if (!tour) {
-        res.status(400);
-        throw new Error("Tour Not Found");
-    }
-
     res.status(204).json({
         status: "success",
         data: null,
     });
 };
 
-module.exports = { getTours, createTour, updateTour, deleteTour, getTourById };
+module.exports = {
+    checkBody,
+    checkID,
+    getTours,
+    createTour,
+    updateTour,
+    deleteTour,
+    getTourById,
+};
