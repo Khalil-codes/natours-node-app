@@ -16,10 +16,24 @@ const getTours = (req, res) => {
     });
 };
 
+// @desc    Get tours
+// @route   GET /api/v1/tours
+// @access  Public
+const getTourById = (req, res) => {
+    const tour = tours.find((el) => el.id === +req.params.id);
+    if (!tour) {
+        res.status(400);
+        throw new Error("Tour Not Found");
+    }
+    res.status(200).json({
+        status: "success",
+        data: { tour },
+    });
+};
 // @desc    Set tours
 // @route   POST /api/v1/tours
 // @access  Private
-const setTour = (req, res) => {
+const createTour = (req, res) => {
     if (!req.body) {
         res.status(400);
         throw new Error("Please Add Data");
@@ -46,17 +60,35 @@ const setTour = (req, res) => {
 };
 
 // @desc    Update tours
-// @route   PUT /api/v1/tours/:id
+// @route   PATCH /api/v1/tours/:id
 // @access  Private
 const updateTour = (req, res) => {
-    res.status(200).json({ message: `Update Tour ${req.params.id}` });
+    const tour = tours.find((el) => el.id === +req.params.id);
+    if (!tour) {
+        res.status(400);
+        throw new Error("Tour Not Found");
+    }
+
+    res.status(200).json({
+        status: "success",
+        data: { tour: `<Updated Tour ${req.params.id}>` },
+    });
 };
 
 // @desc    Delete tours
 // @route   DELETE /api/v1/tours/:id
 // @access  Private
 const deleteTour = (req, res) => {
-    res.status(200).json({ message: `Delete Tour ${req.params.id}` });
+    const tour = tours.find((el) => el.id === +req.params.id);
+    if (!tour) {
+        res.status(400);
+        throw new Error("Tour Not Found");
+    }
+
+    res.status(204).json({
+        status: "success",
+        data: null,
+    });
 };
 
-module.exports = { getTours, setTour, updateTour, deleteTour };
+module.exports = { getTours, createTour, updateTour, deleteTour, getTourById };
