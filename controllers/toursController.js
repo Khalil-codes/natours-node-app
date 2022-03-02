@@ -5,16 +5,31 @@ const Tour = require("../models/toursModel");
 // @access  Public
 const getTours = async (req, res) => {
     try {
-        const tours = await Tour.find();
+        // Filter Query
+        // 1. Filtering
+        const queryParams = { ...req.query };
+        const excludedFields = ["page", "sort", "limit", "fields"];
+        excludedFields.forEach((el) => delete queryParams[el]);
+        // 2. Advanced Filtering
+        let queryStr = JSON.stringify(queryParams);
+        queryStr = queryStr.replace(
+            /\b(gte|gt|lte|lt)\b/g,
+            (match) => `$${match}`
+        );
+        // Querying Based on Filter Query
+        const query = Tour.find(JSON.parse(queryStr));
+
+        // Awaiting Query
+        const tours = await query;
         res.status(200).json({
             status: "success",
             results: tours.length,
             data: { tours },
         });
-    } catch {
+    } catch (error) {
         res.status(404).json({
             status: "fail",
-            message: "Something went wrong",
+            message: error.message,
         });
     }
 };
