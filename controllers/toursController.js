@@ -17,7 +17,15 @@ const getTours = async (req, res) => {
             (match) => `$${match}`
         );
         // Querying Based on Filter Query
-        const query = Tour.find(JSON.parse(queryStr));
+        let query = Tour.find(JSON.parse(queryStr));
+
+        // Sorting in [asc, desc] and relative
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(",").join(" ");
+            query = query.sort(sortBy);
+        } else {
+            query = query.sort("-createdAt");
+        }
 
         // Awaiting Query
         const tours = await query;
