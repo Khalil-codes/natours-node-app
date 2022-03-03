@@ -1,5 +1,12 @@
 const Tour = require("../models/toursModel");
 
+const aliasTopTours = (req, res, next) => {
+    req.query.limit = "5";
+    req.query.sort = "-ratingsAverage,price";
+    req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+    next();
+};
+
 // @desc    Get tours
 // @route   GET /api/v1/tours
 // @access  Public
@@ -143,4 +150,5 @@ module.exports = {
     updateTour,
     deleteTour,
     getTourById,
+    aliasTopTours,
 };
