@@ -108,6 +108,9 @@ const deleteTour = async (req, res) => {
     }
 };
 
+// @desc    Get tours stats based on difficulty
+// @route   GET api/v1/tours/tour-stats
+// @access  Private
 const getTourStats = async (req, res) => {
     try {
         const stats = await Tour.aggregate([
@@ -159,6 +162,65 @@ const getTourStats = async (req, res) => {
     }
 };
 
+const getMonthlyPlan = async (req, res) => {
+    try {
+        const year = +req.params.year;
+        const plan = await Tour.aggregate([
+            { $unwind: "$startDates" },
+            {
+                $match: {
+                    startDates: {
+                        $gte: new Date(`${year}-01-01`),
+                        $lte: new Date(`${year}-12-31`),
+                    },
+                },
+            },
+            {
+                $group: {
+                    _id: { $month: "$startDates" },
+                    numTourStarts: { $sum: 1 },
+                    tours: { $push: "$name" },
+                },
+            },
+            {
+                $addFields: {
+                    month: {
+                        $let: {
+                            vars: {
+                                // prettier-ignore
+                                monthsInString: [, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+                            },
+                            in: {
+                                $arrayElemAt: ["$$monthsInString", "$_id"],
+                            },
+                        },
+                    },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                },
+            },
+            {
+                $sort: {
+                    numTourStarts: -1,
+                },
+            },
+        ]);
+        res.status(200).json({
+            status: "success",
+            results: plan.length,
+            data: plan,
+        });
+    } catch (error) {
+        res.status(404).json({
+            status: "fail",
+            message: "Something went Wrong",
+        });
+    }
+};
+
 module.exports = {
     getTours,
     createTour,
@@ -167,4 +229,5 @@ module.exports = {
     getTourById,
     aliasTopTours,
     getTourStats,
+    getMonthlyPlan,
 };
