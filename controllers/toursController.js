@@ -61,10 +61,10 @@ const createTour = async (req, res) => {
             status: "success",
             data: { tour },
         });
-    } catch {
+    } catch (error) {
         res.status(404).json({
             status: "fail",
-            message: "Invalid data sent!!",
+            message: error,
         });
     }
 };
