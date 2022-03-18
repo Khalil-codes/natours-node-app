@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const slugify = require("slugify");
+const validator = require("validator");
+
+// Defining Schema
 const tourSchema = mongoose.Schema(
     {
         name: {
@@ -35,7 +38,17 @@ const tourSchema = mongoose.Schema(
         },
         ratingsQuantity: { type: Number, default: 0 },
         price: { type: Number, required: [true, "Please add Tour Price"] },
-        priceDiscount: Number,
+        priceDiscount: {
+            type: Number,
+            validate: {
+                // Cannot work on update,  just on save time...
+                validator: function (value) {
+                    return value < this.price;
+                },
+                message: (props) =>
+                    `Discount Price (${props.value}) should be lower than actual price..`,
+            },
+        },
         summary: {
             type: String,
             trim: true,
