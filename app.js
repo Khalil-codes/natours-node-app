@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const { errorHandler } = require("./middleware/errorMiddleware");
+const unknownRoute = require("./middleware/unknownRoute");
 
 const app = express();
 
@@ -13,6 +14,9 @@ app.use(express.static(`${__dirname}/public`));
 // Routes Middleware
 app.use("/api/v1/tours", require("./routes/tourRoutes"));
 app.use("/api/v1/users", require("./routes/userRoutes"));
+
+// Unknown Route
+app.all("*", unknownRoute);
 
 // Error Handler
 app.use(errorHandler);
